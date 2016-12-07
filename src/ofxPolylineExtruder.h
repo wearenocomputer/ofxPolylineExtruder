@@ -1,3 +1,11 @@
+/*
+ *  ofxPolylineExtruder.h
+ *
+ *  Created by Wim Vanhenden 07/12/2016.
+ *  nocomputer.be
+ *  wim@nocomputer.be
+ */
+
 #pragma once
 
 #include "ofMain.h"
@@ -6,7 +14,6 @@ class ofxPolylineExtruder {
 
 	public:
 		
-    
     static void polyline2Mesh(ofPolyline &line, ofMesh &mesh, float _height){
     
         mesh.clear();
@@ -57,7 +64,6 @@ class ofxPolylineExtruder {
         for (auto &it : floormesh.getIndices()) {
             mesh.addIndex(it+offsettwo);
         }
-
     
     };
 		

@@ -1,7 +1,6 @@
 # ofxPolylineExtruder
 
-This addon extrudes an ofPolyline.
-It returns an ofMesh object.
+This addon extrudes an ofPolyline and creates an ofMesh object.
 
 Use it like this:
 

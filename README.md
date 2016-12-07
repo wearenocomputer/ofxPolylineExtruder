@@ -5,11 +5,11 @@ This addon extrudes an ofPolyline and creates an ofMesh object.
 Use it like this:
 
 	ofPolyline myline;
-	myline(ofPoint(-100,-100));
-	myline(ofPoint(-100,100));
-	myline(ofPoint(100,100));
-	myline(ofPoint(0,0));
-	myline(ofPoint(100,-100));
+	myline.addVertex(ofPoint(-100,-100));
+	myline.addVertex(ofPoint(-100,100));
+	myline.addVertex(ofPoint(100,100));
+	myline.addVertex(ofPoint(0,0));
+	myline.addVertex(ofPoint(100,-100));
 	
 	ofMesh mymesh;
  

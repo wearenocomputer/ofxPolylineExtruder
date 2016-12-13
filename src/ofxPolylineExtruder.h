@@ -13,6 +13,47 @@ class ofxPolylineExtruder {
     
 public:
     
+    static void drawNormals(ofMesh mesh,float length, bool bFaceNormals) {
+        ofMesh normalsMesh;
+        
+        if(mesh.usingNormals()) {
+            const vector<ofVec3f>& normals    = mesh.getNormals();
+            const vector<ofVec3f>& vertices   = mesh.getVertices();
+            ofVec3f normal;
+            ofVec3f vert;
+            
+            normalsMesh.setMode( OF_PRIMITIVE_LINES );
+            normalsMesh.getVertices().resize( normals.size() * 2);
+            
+            if(bFaceNormals) {
+                for(int i = 0; i < (int)normals.size(); i++ ) {
+                    if(i % 3 == 0) {
+                        vert = (vertices[i]+vertices[i+1]+vertices[i+2]) / 3;
+                    } else if(i % 3 == 1) {
+                        vert = (vertices[i-1]+vertices[i]+vertices[i+1]) / 3;
+                    } else if ( i % 3 == 2) {
+                        vert = (vertices[i-2]+vertices[i-1]+vertices[i]) / 3;
+                    }
+                    normalsMesh.setVertex(i*2, vert);
+                    normal = normals[i].getNormalized();
+                    normal *= length;
+                    normalsMesh.setVertex(i*2+1, normal+vert);
+                }
+            } else {
+                for(int i = 0; i < (int)normals.size(); i++) {
+                    vert = vertices[i];
+                    normal = normals[i].getNormalized();
+                    normalsMesh.setVertex( i*2, vert);
+                    normal *= length;
+                    normalsMesh.setVertex(i*2+1, normal+vert);
+                }
+            }
+            normalsMesh.draw();
+        } else {
+            ofLogWarning("of3dPrimitive") << "drawNormals(): mesh normals are disabled";
+        }
+    }
+
     static void polyline2Mesh(ofPolyline &line, ofMesh &mesh, float _height){
         
         mesh.clear();

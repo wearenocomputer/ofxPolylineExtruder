@@ -54,46 +54,50 @@ public:
         }
     }
 
-    static void polyline2Mesh(ofPolyline &line, ofMesh &mesh, float _height){
+    static void polyline2Mesh(ofPolyline &line, ofMesh &mesh, float _height, ofFloatColor _color = ofFloatColor(1, 1, 1, 1) ,bool yisheight=true){
         
         mesh.clear();
-        ofVec3f middlepoint;
-        
-        for (int i=0;i<line.size();i++) {
-            middlepoint += line[i];
-        }
-        
-        middlepoint = middlepoint/line.size();
-        
+     
+		ofVec3f middlepoint = line.getCentroid2D();
+
         //create floor vertices
         for(int i = 0; i < line.size(); i++) {
-            
-            ofVec3f diffb =  ofVec3f(line[i].x, line[i].y, line[i].z) - ofVec3f(middlepoint.x,middlepoint.y,middlepoint.z);
+			ofVec3f diffb = ofVec3f(line[i].x, line[i].y, line[i].z) - ofVec3f(middlepoint.x, middlepoint.y, middlepoint.z);
             mesh.addVertex(ofVec3f(line[i].x, line[i].y, line[i].z));
             mesh.addNormal(diffb.normalize());
-            mesh.addColor(ofColor(ofRandom(0,255),ofRandom(0,255),ofRandom(0,255)));
-            
+            //mesh.addColor(ofColor(ofRandom(0,255),ofRandom(0,255),ofRandom(0,255)));
+			mesh.addColor(_color);
         }
-        
+
         //create top vertices
         for(int i = 0; i < line.size(); i++) {
-            ofVec3f newmiddlepoint = middlepoint+ofVec3f(0,_height,0);
-            ofVec3f diffb =  ofVec3f(ofVec3f(line[i].x, _height+line[i].y, line[i].z)) - ofVec3f(newmiddlepoint.x,newmiddlepoint.y,newmiddlepoint.z);
-            mesh.addVertex(ofVec3f(line[i].x, _height+line[i].y, line[i].z));
+            
+			ofVec3f newmiddlepoint = middlepoint+ofVec3f(0,_height,0);
+			ofVec3f diffb;
+			if (!yisheight) {
+				diffb = ofVec3f(ofVec3f(line[i].x, _height + line[i].y, line[i].z)) - ofVec3f(newmiddlepoint.x, newmiddlepoint.y, newmiddlepoint.z);
+				mesh.addVertex(ofVec3f(line[i].x, _height + line[i].y, line[i].z));
+			}
+			else {
+				diffb = ofVec3f(ofVec3f(line[i].x, line[i].y, _height + line[i].z)) - ofVec3f(newmiddlepoint.x, newmiddlepoint.y, newmiddlepoint.z);
+				mesh.addVertex(ofVec3f(line[i].x,line[i].y, _height + line[i].z));
+			}
+     
             mesh.addNormal(diffb.normalize());
-            mesh.addColor(ofColor(ofRandom(0,255),ofRandom(0,255),ofRandom(0,255)));
+            //mesh.addColor(ofColor(ofRandom(0,255),ofRandom(0,255),ofRandom(0,255)));
+			mesh.addColor(_color);
         }
         
-        //COUNTER CLOCK WISE
-        for (int i=0;i<line.size();i++) {
-            if (i<line.size()-1){
-                mesh.addTriangle(i, i+1,line.size()+i);
-                mesh.addTriangle(i+1, line.size()+i+1,line.size()+i);
-            } else {
-                mesh.addTriangle(i, i+1,line.size()+i);
-                mesh.addTriangle(i, 0,i+1);
-            }
-        }
+       for (int i = 0; i<line.size(); i++) {
+			if (i<line.size() - 1) {
+				mesh.addTriangle(i, i + 1, line.size() + i);
+				mesh.addTriangle(i + 1, line.size() + i + 1, line.size() + i);
+			}
+			else {
+				mesh.addTriangle(i, i + 1, line.size() + i);
+				mesh.addTriangle(i, 0, i + 1);
+			}
+		}
         
         
         //create floor
@@ -103,8 +107,17 @@ public:
         int offset =mesh.getNumVertices();
         for (auto &it : floormesh.getVertices()) {
             mesh.addVertex(it);
-            mesh.addNormal(ofVec3f(0,-1,0));
-            mesh.addColor(ofColor(255,0,0));
+       
+
+			if (!yisheight) {
+				mesh.addNormal(ofVec3f(0, -1, 0));
+			}
+			else {
+				mesh.addNormal(ofVec3f(0, 0, -1));
+			}
+
+
+			mesh.addColor(_color);
         }
         
         for (auto &it : floormesh.getIndices()) {
@@ -117,9 +130,18 @@ public:
         tess.tessellateToMesh(line, OF_POLY_WINDING_NONZERO, topmesh);
         int offsettwo =mesh.getNumVertices();
         for (auto &it : topmesh.getVertices()) {
-            mesh.addVertex(it+ofVec3f(0,_height,0));
-            mesh.addNormal(ofVec3f(0,1,0));
-            mesh.addColor(ofColor(255,0,0));
+
+			if (!yisheight) {
+				mesh.addVertex(it + ofVec3f(0, _height,0 ));
+				mesh.addNormal(ofVec3f(0, 1, 0));
+			}
+			else {
+				mesh.addVertex(it + ofVec3f(0, 0, _height));
+				mesh.addNormal(ofVec3f(0, 0, 1));
+			}
+
+           
+			mesh.addColor(_color);
         }
         
         for (auto &it : topmesh.getIndices()) {
